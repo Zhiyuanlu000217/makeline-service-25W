@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: makeline-service
+  labels:
+    app: makeline-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: makeline-service
+  template:
+    metadata:
+      labels:
+        app: makeline-service
+    spec:
+      containers:
+      - name: makeline-service
+        image: zeelu1/makeline-service:latest
+        ports:
+        - containerPort: 3070
+        env:
+        - name: PORT
+          value: "3070"
+        - name: AZURE_SERVICE_BUS_CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              name: makeline-secrets
+              key: service-bus-connection-string
+        - name: AZURE_SERVICE_BUS_QUEUE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: makeline-secrets
+              key: service-bus-queue-name
+        - name: COSMOS_DB_CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              name: makeline-secrets
+              key: cosmos-db-connection-string
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m" 

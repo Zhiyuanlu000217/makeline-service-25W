@@ -1,0 +1,17 @@
+{
+  "name": "makeline-service-25w",
+  "version": "1.0.0",
+  "description": "Processes and completes orders by reading from the order queue.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/service-bus": "^7.9.5",
+    "dotenv": "^16.4.7",
+    "mongodb": "^6.15.0"
+  }
+}
