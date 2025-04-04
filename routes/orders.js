@@ -1,16 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { MongoClient, ObjectId } = require('mongodb');
-
-// MongoDB connection string from environment variable
-const cosmosConnectionString = process.env.COSMOS_DB_CONNECTION_STRING;
-const mongoClient = new MongoClient(cosmosConnectionString);
+const { ObjectId } = require('mongodb');
+const { getDatabase } = require('../db');
 
 // Get all orders
 router.get('/', async (req, res) => {
     try {
-        await mongoClient.connect();
-        const database = mongoClient.db('orders');
+        const database = await getDatabase();
         const collection = database.collection('orderHistory');
         
         const orders = await collection.find({}).toArray();
@@ -18,8 +14,6 @@ router.get('/', async (req, res) => {
     } catch (error) {
         console.error('Error fetching orders:', error);
         res.status(500).json({ error: 'Failed to fetch orders' });
-    } finally {
-        await mongoClient.close();
     }
 });
 
@@ -29,8 +23,7 @@ router.put('/:id', async (req, res) => {
         const { id } = req.params;
         const updateData = req.body;
 
-        await mongoClient.connect();
-        const database = mongoClient.db('orders');
+        const database = await getDatabase();
         const collection = database.collection('orderHistory');
         
         const result = await collection.updateOne(
@@ -46,8 +39,6 @@ router.put('/:id', async (req, res) => {
     } catch (error) {
         console.error('Error updating order:', error);
         res.status(500).json({ error: 'Failed to update order' });
-    } finally {
-        await mongoClient.close();
     }
 });
 
@@ -56,8 +47,7 @@ router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        await mongoClient.connect();
-        const database = mongoClient.db('orders');
+        const database = await getDatabase();
         const collection = database.collection('orderHistory');
         
         const result = await collection.deleteOne({ _id: new ObjectId(id) });
@@ -70,8 +60,6 @@ router.delete('/:id', async (req, res) => {
     } catch (error) {
         console.error('Error deleting order:', error);
         res.status(500).json({ error: 'Failed to delete order' });
-    } finally {
-        await mongoClient.close();
     }
 });
 
