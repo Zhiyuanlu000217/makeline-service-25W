@@ -1,6 +1,21 @@
 require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 const { ServiceBusClient } = require('@azure/service-bus');
 const { MongoClient } = require('mongodb');
+
+// Create Express app
+const app = express();
+const port = process.env.PORT || 3070;
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+
+// Import routes
+const orderRoutes = require('./routes/orders');
+app.use('/api/orders', orderRoutes);
 
 // Connection strings from environment variables
 const serviceBusConnectionString = process.env.AZURE_SERVICE_BUS_CONNECTION_STRING;
@@ -30,7 +45,7 @@ async function storeOrder(orderData) {
     }
 }
 
-async function main() {
+async function startServiceBus() {
     try {
         // Connect to Cosmos DB
         await mongoClient.connect();
@@ -75,7 +90,12 @@ async function main() {
     }
 }
 
-main().catch((err) => {
-    console.error('Error occurred:', err);
-    process.exit(1);
+// Start the Express server
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+    // Start the Service Bus listener
+    startServiceBus().catch((err) => {
+        console.error('Error occurred:', err);
+        process.exit(1);
+    });
 }); 

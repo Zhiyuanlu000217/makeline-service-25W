@@ -18,7 +18,8 @@ spec:
       - name: makeline-service
         image: zeelu1/makeline-service:latest
         ports:
-        - containerPort: 3070
+        - name: http
+          containerPort: 3070
         env:
         - name: PORT
           value: "3070"
@@ -43,4 +44,16 @@ spec:
             cpu: "100m"
           limits:
             memory: "256Mi"
-            cpu: "200m" 
+            cpu: "200m"
+        readinessProbe:
+          httpGet:
+            path: /api/orders
+            port: 3070
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /api/orders
+            port: 3070
+          initialDelaySeconds: 15
+          periodSeconds: 20 

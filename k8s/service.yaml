@@ -6,7 +6,12 @@ spec:
   selector:
     app: makeline-service
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
+      targetPort: 3070
+    - name: api
+      protocol: TCP
+      port: 3070
       targetPort: 3070
   type: ClusterIP 
